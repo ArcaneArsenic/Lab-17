@@ -3,6 +3,7 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,20 +46,25 @@ namespace Ksu.Cis300.NameLookup
         /// <param name="key">The key.</param>
         /// <returns>The location of key, or the location at which it could be
         /// inserted.</returns>
-        private static BinaryTreeNode Find(TKey key, BinaryTreeNode nood)
+        private static BinaryTreeNode<KeyValuePair<TKey, TValue>> Find(TKey key, BinaryTreeNode<KeyValuePair<TKey, TValue>> nood)
         {
+            Exception a = new InvalidOperationException();
             if (nood.Equals(null))
             {
-                return null;
+                return nood;
             }
             else 
             {
-                int test = key.CompareTo(nood.Data);
+                int test = key.CompareTo(nood.Data.Key);
                 switch (test)
                 {
                     case -1:
-                        nood.Add(key);
-
+                        key = nood.LeftChild.Data.Key;
+                        break;
+                    case 0:
+                        throw a;
+                    case 1:
+                        key = nood.RightChild.Data.Key;
                         break;
                 }
             }
@@ -83,7 +89,7 @@ namespace Ksu.Cis300.NameLookup
                 }
              */
             }
-            return start;
+            //return start;
         }
     /// <summary>
     /// recursive
@@ -94,7 +100,11 @@ namespace Ksu.Cis300.NameLookup
     /// <param name="v"></param>
     /// <returns></returns>
     private static BinaryTreeNode<KeyValuePair<TKey, TValue>> Add(BinaryTreeNode<KeyValuePair<TKey, TValue>> t, TKey k, TValue v)
-    { 
+    {
+        //t = Find();
+        k = t.Data.Key;
+        v = t.Data.Value;
+        t = t.Add(t, k, v);
         
     }
 
@@ -104,6 +114,7 @@ namespace Ksu.Cis300.NameLookup
 
     /// <summary>
     /// Tries to get the value associated with the given key.
+    /// call the find method
     /// </summary>
     /// <param name="k">The key.</param>
     /// <param name="v">The value associated with k, or the default value if
@@ -111,9 +122,9 @@ namespace Ksu.Cis300.NameLookup
     /// <returns>Whether k was found as a key in the dictionary.</returns>
     public bool TryGetValue(TKey k, out TValue v)
         {
-            CheckKey(k);
-            int p = Find(k);
-            if (p == _elements.Count || !_elements[p].Key.Equals(k))
+            //CheckKey(k);
+            //int p = Find(k);
+            if (k == nood.d || !_elements[p].Key.Equals(k))
             {
                 v = default(TValue);
                 return false;
@@ -134,16 +145,7 @@ namespace Ksu.Cis300.NameLookup
         /// <param name="v">The value.</param>
         public void Add(TKey k, TValue v)
         {
-            CheckKey(k);
-            int p = Find(k);
-            if (p == _elements.Count || !_elements[p].Key.Equals(k))
-            {
-                _elements.Insert(p, new KeyValuePair<TKey, TValue>(k, v));
-            }
-            else
-            {
-                throw new ArgumentException();
-            }
+           nood.Add(k,v)
         }
     }
 }
